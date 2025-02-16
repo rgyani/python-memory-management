@@ -35,22 +35,33 @@ Consider the code example below
 As you can see above, del() statement doesn’t delete objects, it removes the name (and reference) to the object. When the reference count is zero, the object is deleted from the system by the garbage collection.
 
 ##### Advantages/Disadvantages of reference counting
-* it is easy to implement.
-* Programmers don’t have to worry about deleting objects when they are no longer used.
-* However, this memory management is bad for memory itself! The algorithm always counts the reference numbers to the objects and stores the reference counts in the memory to keep the memory clean and make sure the programs run effectively.
-* Also in case of cyclic references reference counting can't work
+- it is easy to implement.
+- Programmers don’t have to worry about deleting objects when they are no longer used.
+- However, this memory management is bad for memory itself! The algorithm always counts the reference numbers to the objects and stores the reference counts in the memory to keep the memory clean and make sure the programs run effectively.
+- Also, **in case of cyclic references reference counting can't work**
 
 
 #### 2. Generational Garbage Collection
 Prior to Python version 2.0, the Python interpreter only used reference counting for memory management
 
-Generational garbage collection is a type of trace-based garbage collection. It can break cyclic references and delete the unused objects even if they are referred by themselves.
+Generational garbage collection is a type of trace-based garbage collection. **It can break cyclic references and delete the unused objects even if they are referred by themselves.**
 
 Python keeps track of every object in memory. 3 lists are created when a program is run. Generation 0, 1, and 2 lists.  
 
 Newly created objects are put in the Generation 0 list. A list is created for objects to discard. Reference cycles are detected. If an object has no outside references it is discarded. The objects who survived after this process are put in the Generation 1 list. The same steps are applied to the Generation 1 list. Survivals from the Generation 1 list are put in the Generation 2 list. The objects in the Generation 2 list stay there until the end of the program execution.
 
-
+### When Does Python Switch from Reference Counting to GC?
+Python switches from reference counting to generational garbage collection when:
+ - A cyclic reference is detected (e.g., objects referencing each other).
+- The threshold for a generation is exceeded (Python automatically runs GC when too many objects pile up).
+  
+You can check these thresholds with:
+```python
+import gc
+print(gc.get_threshold())  # Default: (700, 10, 10)
+700 → If Gen 0 has over 700 objects, it triggers a collection.
+10 → If 10 collections occur in Gen 0, Gen 1 is collected.
+```
 
 ## Memory Allocation in Python
 There are two parts of memory:
